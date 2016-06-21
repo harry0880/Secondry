@@ -17,7 +17,16 @@ public class GetSetData {
         this.imei = imei;
     }
 
+    public ArrayList<String> getImei() {
+        return imei;
+    }
+
+    public void setImei(ArrayList<String> imei) {
+        this.imei = imei;
+    }
+
     ArrayList<String> imei;
+
 
 
     public String toString()

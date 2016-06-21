@@ -1,17 +1,25 @@
 package com.secondry;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.secondry.GetterSetter.GetSetData;
@@ -31,6 +39,7 @@ SearchableSpinner spModel;
     ArrayAdapter<GetSetData> adapter;
     ArrayList<GetSetData> data;
     ListView lv;
+    Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +48,7 @@ SearchableSpinner spModel;
         setSupportActionBar(toolbar);
         initialize();
         setModel();
+        context=this;
         adapter=new ArrayAdapter<GetSetData>(this,  android.R.layout.simple_list_item_1, android.R.id.text1, data);
     lv.setAdapter(adapter);
         barcode.setOnClickListener(new View.OnClickListener() {
@@ -61,6 +71,15 @@ SearchableSpinner spModel;
         });
 
 
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                GetSetData object=(GetSetData) lv.getItemAtPosition(position);
+                loadView(object,view);
+            }
+        });
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,6 +99,30 @@ SearchableSpinner spModel;
         Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spModel.setAdapter(Adapter);
     }
+
+    private void loadView(GetSetData getset, View v) {
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        View layout = inflater.inflate(R.layout.dialog,
+                (ViewGroup) v.findViewById(R.id.layout_root));
+        ListView ll=(ListView) layout.findViewById(R.id.lview);
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(context,  android.R.layout.simple_list_item_1, android.R.id.text1, getset.getImei());
+        ll.setAdapter(adapter);
+        dialog.setPositiveButton("Close", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialog.setView(layout);
+        dialog.create();
+        dialog.show();
+       /* imageDialog.create();
+        imageDialog.show();*/
+    }
+
+
     void initialize()
     {
         spModel=(SearchableSpinner) findViewById(R.id.spModel);
