@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,7 +18,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.secondry.GetterSetter.GetSetData;
@@ -33,7 +31,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
 
 public class MainActivity extends AppCompatActivity {
 SearchableSpinner spModel;
-    EditText etQty;
+    EditText etQty,etImei;
     FancyButton btnSubmit;
     ImageButton barcode;
     ArrayAdapter<GetSetData> adapter;
@@ -57,7 +55,7 @@ SearchableSpinner spModel;
                 if(!etQty.getText().toString().trim().equals(""))
                 {
                     IMEI.setCnt(Integer.parseInt(etQty.getText().toString()));
-                    startActivity(new Intent(MainActivity.this, SimpleScannerFragmentActivity.class));
+                    startActivityForResult(new Intent(MainActivity.this, SimpleScannerFragmentActivity.class),0);
                 }
             }
         });
@@ -65,8 +63,21 @@ SearchableSpinner spModel;
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            data.add(new GetSetData(spModel.getSelectedItem().toString(),etQty.getText().toString(),IMEI.getImei()));
-             adapter.notifyDataSetChanged();
+            ArrayList<String> imeino=new ArrayList<String>();
+                String[] arr=etImei.getText().toString().split("\n");
+               if(Integer.parseInt(etQty.getText().toString()) == (arr.length)) {
+                   for (String ar : arr) {
+                       imeino.add(ar);
+                   }
+                   data.add(new GetSetData(spModel.getSelectedItem().toString(), etQty.getText().toString(), imeino));
+                   adapter.notifyDataSetChanged();
+                   etQty.setText("");
+                   etImei.setText("");
+               }
+                else
+               {
+                   Snackbar.make(v,"Qty and IMEI count don't match",Snackbar.LENGTH_LONG).show();
+               }
             }
         });
 
@@ -88,6 +99,21 @@ SearchableSpinner spModel;
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        ArrayList<String> imei=IMEI.getImei();
+        String Imei=null;
+        for(String emi:imei)
+        {
+            if(Imei==null)
+            Imei=emi;
+            else
+                Imei=Imei+"\n"+emi;
+        }
+        etImei.setText(Imei);
     }
 
     void setModel()
@@ -118,8 +144,6 @@ SearchableSpinner spModel;
         dialog.setView(layout);
         dialog.create();
         dialog.show();
-       /* imageDialog.create();
-        imageDialog.show();*/
     }
 
 
@@ -131,6 +155,7 @@ SearchableSpinner spModel;
         barcode=(ImageButton) findViewById(R.id.barcode);
        data=new ArrayList<>();
         lv=(ListView) findViewById(R.id.listview);
+        etImei=(EditText) findViewById(R.id.etImei);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
