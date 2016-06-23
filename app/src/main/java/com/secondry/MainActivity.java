@@ -34,7 +34,7 @@ import java.util.Calendar;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 public class MainActivity extends AppCompatActivity {
-SearchableSpinner spModel;
+SearchableSpinner spModel,spRetailers;
     EditText etQty,etImei;
     FancyButton btnSubmit,btnSave;
     ImageButton barcode;
@@ -50,6 +50,7 @@ SearchableSpinner spModel;
         setSupportActionBar(toolbar);
         initialize();
         setModel();
+        setRetailers();
         context=this;
         adapter=new ArrayAdapter<GetSetData>(this,  android.R.layout.simple_list_item_1, android.R.id.text1, data);
     lv.setAdapter(adapter);
@@ -153,12 +154,28 @@ SearchableSpinner spModel;
         ArrayList<String> ar=new ArrayList<>();
         ar.add("MOB1");
         ar.add("MOB2");
+       /* ArrayAdapter<Model> adapter=new ArrayAdapter<Model>(this, android.R.layout.simple_spinner_item, db.getModelList();)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spModel.setAdapter(adapter);*/
         ArrayAdapter<String> Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ar);
         Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spModel.setAdapter(Adapter);
     }
 
-    private void loadView(GetSetData getset, View v) {
+    void setRetailers()
+    {
+        ArrayList<String> ar=new ArrayList<>();
+        ar.add("MOB1");
+        ar.add("MOB2");
+       /* ArrayAdapter<Retailers> adapter=new ArrayAdapter<Model>(this, android.R.layout.simple_spinner_item, db.getRetailerList();)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spModel.setAdapter(adapter);*/
+        ArrayAdapter<String> Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ar);
+        Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spRetailers.setAdapter(Adapter);
+    }
+
+      private void loadView(GetSetData getset, View v) {
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -178,6 +195,32 @@ SearchableSpinner spModel;
         dialog.show();
     }
 
+    private void EnterNewRetailer_View(GetSetData getset, View v) {
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        View layout = inflater.inflate(R.layout.addretailer_dialog,
+                (ViewGroup) v.findViewById(R.id.layout_root));
+        EditText etRetailername=(EditText) layout.findViewById(R.id.etRetailerName);
+
+        dialog.setPositiveButton("Save", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int which) {
+              //Save Retailer
+            }
+        });
+
+        dialog.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialog.setView(layout);
+        dialog.create();
+        dialog.show();
+    }
+
 
     void initialize()
     {
@@ -185,11 +228,13 @@ SearchableSpinner spModel;
         etQty=(EditText) findViewById(R.id.etQty);
         btnSubmit=(FancyButton) findViewById(R.id.btnSubmit);
         barcode=(ImageButton) findViewById(R.id.barcode);
-       data=new ArrayList<>();
+        data=new ArrayList<>();
         lv=(ListView) findViewById(R.id.listview);
         etImei=(EditText) findViewById(R.id.etImei);
         btnSave=(FancyButton) findViewById(R.id.btnSave);
+        spRetailers=(SearchableSpinner) findViewById(R.id.spRetailer);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
