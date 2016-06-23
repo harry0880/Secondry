@@ -1,6 +1,7 @@
 package com.secondry;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,17 +23,20 @@ import android.widget.ListView;
 
 import com.secondry.GetterSetter.GetSetData;
 import com.secondry.GetterSetter.IMEI;
+import com.secondry.Utils.DBConstant;
 import com.secondry.Utils.SimpleScannerFragmentActivity;
 import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
 public class MainActivity extends AppCompatActivity {
 SearchableSpinner spModel;
     EditText etQty,etImei;
-    FancyButton btnSubmit;
+    FancyButton btnSubmit,btnSave;
     ImageButton barcode;
     ArrayAdapter<GetSetData> adapter;
     ArrayList<GetSetData> data;
@@ -81,6 +85,26 @@ SearchableSpinner spModel;
             }
         });
 
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(GetSetData getset:data)
+                {
+                    ContentValues cv=new ContentValues();
+                    cv.put(DBConstant.C_Model_Id,getset.getModel());
+                  /*  cv.put(DBConstant.C_Retailer_Id,);*/
+                    cv.put(DBConstant.C_Qty,getset.getQty());
+                    cv.put(DBConstant.C_SaleDate,getDate());
+                    ArrayList<String> imei=getset.getImei();
+                    ContentValues cv1=new ContentValues();
+                    for(String no:imei)
+                    {
+                        /*cv1.put(DBConstant.C_Id);*/
+                        cv1.put(DBConstant.C_Imeino,no);
+                    }
+                }
+            }
+        });
 
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -116,6 +140,14 @@ SearchableSpinner spModel;
         etImei.setText(Imei);
     }
 
+    String getDate()
+    {
+        Calendar c = Calendar.getInstance();
+        System.out.println("Current time => " + c.getTime());
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd");
+        String formattedDate = df.format(c.getTime());
+        return formattedDate;
+    }
     void setModel()
     {
         ArrayList<String> ar=new ArrayList<>();
@@ -156,6 +188,7 @@ SearchableSpinner spModel;
        data=new ArrayList<>();
         lv=(ListView) findViewById(R.id.listview);
         etImei=(EditText) findViewById(R.id.etImei);
+        btnSave=(FancyButton) findViewById(R.id.btnSave);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

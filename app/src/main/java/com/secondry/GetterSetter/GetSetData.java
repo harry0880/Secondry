@@ -6,9 +6,15 @@ import java.util.ArrayList;
  * Created by Administrator on 21/06/2016.
  */
 public class GetSetData {
+    public String getModel() {
+        return Model;
+    }
+
+    public String getQty() {
+        return Qty;
+    }
+
     String Model;
-
-
     String Qty;
 
     public GetSetData(String model, String qty, ArrayList<String> imei) {
@@ -26,8 +32,6 @@ public class GetSetData {
     }
 
     ArrayList<String> imei;
-
-
 
     public String toString()
     {
