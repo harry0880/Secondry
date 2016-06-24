@@ -1,10 +1,12 @@
 package com.secondry;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -24,6 +26,7 @@ import android.widget.ListView;
 import com.secondry.GetterSetter.GetSetData;
 import com.secondry.GetterSetter.IMEI;
 import com.secondry.Utils.DBConstant;
+import com.secondry.Utils.DbHandler;
 import com.secondry.Utils.SimpleScannerFragmentActivity;
 import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
@@ -31,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,6 +46,7 @@ SearchableSpinner spModel,spRetailers;
     ArrayList<GetSetData> data;
     ListView lv;
     Context context;
+    DbHandler dbh;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,7 +122,7 @@ SearchableSpinner spModel,spRetailers;
         });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+                   fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -202,11 +207,12 @@ SearchableSpinner spModel,spRetailers;
 
         View layout = inflater.inflate(R.layout.addretailer_dialog,
                 (ViewGroup) v.findViewById(R.id.layout_root));
-        EditText etRetailername=(EditText) layout.findViewById(R.id.etRetailerName);
+        final EditText etRetailername=(EditText) layout.findViewById(R.id.etRetailerName);
+        final EditText etRetailerAddress=(EditText) layout.findViewById(R.id.etRetailerAddress);
 
         dialog.setPositiveButton("Save", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int which) {
-              //Save Retailer
+              new SaveRetailer().execute(etRetailername.getText().toString(),etRetailerAddress.getText().toString());
             }
         });
 
@@ -224,6 +230,7 @@ SearchableSpinner spModel,spRetailers;
 
     void initialize()
     {
+        dbh=new DbHandler(MainActivity.this);
         spModel=(SearchableSpinner) findViewById(R.id.spModel);
         etQty=(EditText) findViewById(R.id.etQty);
         btnSubmit=(FancyButton) findViewById(R.id.btnSubmit);
@@ -255,5 +262,42 @@ SearchableSpinner spModel,spRetailers;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private class SaveRetailer extends AsyncTask<String,Void,String>
+    {
+ProgressDialog dialog=new ProgressDialog(context);
+
+
+        @Override
+        protected void onPreExecute() {
+            dialog.setTitle("Please wait!!!");
+            dialog.show();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            return dbh.AddNewRetailer(params[0],params[1]);
+        }
+
+
+        @Override
+        protected void onPostExecute(String s) {
+
+            dialog.dismiss();
+            if(s.equals("Error"))
+            {
+                new SweetAlertDialog(context,SweetAlertDialog.ERROR_TYPE).setTitleText("No Internet Connection or Server Unreachable").show();
+            }
+            else if(s.equals("fail"))
+            {
+                new SweetAlertDialog(context,SweetAlertDialog.ERROR_TYPE).setTitleText("Unable to connect with Server!!!").show();
+            }
+            else {
+              new SweetAlertDialog(context,SweetAlertDialog.SUCCESS_TYPE).setContentText("Added Successfully").show();
+            }
+            super.onPostExecute(s);
+        }
     }
 }

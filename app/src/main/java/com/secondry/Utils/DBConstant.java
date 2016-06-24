@@ -30,6 +30,14 @@ public class DBConstant {
             +C_Qty+" TEXT,"
             +C_SaleDate+" TEXT) ";
 
+    public static final String Create_Table_Model="Create Table "+T_Model_Master+" ("+C_Model_Id+ " TEXT,"
+            +C_Model_Model_Name+" TEXT)";
+
+    public static final String Create_Table_Retailer="Create Table "+T_Retailer_Master+" ("+C_Retailer_Id+ " TEXT,"
+            +C_Retailer_Name+" TEXT)";
+
+    public static final String Create_Table_Imei="Create Table "+T_Imei+" ("+C_Id+ " TEXT,"
+            +C_Imeino+" TEXT)";
 
 
 
