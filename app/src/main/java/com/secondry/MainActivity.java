@@ -25,6 +25,8 @@ import android.widget.ListView;
 
 import com.secondry.GetterSetter.GetSetData;
 import com.secondry.GetterSetter.IMEI;
+import com.secondry.SpinnerAdapters.Model;
+import com.secondry.SpinnerAdapters.Retailers;
 import com.secondry.Utils.DBConstant;
 import com.secondry.Utils.DbHandler;
 import com.secondry.Utils.SimpleScannerFragmentActivity;
@@ -47,6 +49,8 @@ SearchableSpinner spModel,spRetailers;
     ListView lv;
     Context context;
     DbHandler dbh;
+    Model model;
+    Retailers retailers;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +74,29 @@ SearchableSpinner spModel,spRetailers;
             }
         });
 
+        spModel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+             model=(Model) spModel.getSelectedItem();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        spRetailers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                retailers=(Retailers) spRetailers.getSelectedItem();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,7 +106,7 @@ SearchableSpinner spModel,spRetailers;
                    for (String ar : arr) {
                        imeino.add(ar);
                    }
-                   data.add(new GetSetData(spModel.getSelectedItem().toString(), etQty.getText().toString(), imeino));
+                   data.add(new GetSetData(model.getModelId(), etQty.getText().toString(), imeino));
                    adapter.notifyDataSetChanged();
                    etQty.setText("");
                    etImei.setText("");
@@ -92,21 +119,24 @@ SearchableSpinner spModel,spRetailers;
         });
 
         btnSave.setOnClickListener(new View.OnClickListener() {
+            String id;
             @Override
             public void onClick(View v) {
                 for(GetSetData getset:data)
                 {
                     ContentValues cv=new ContentValues();
                     cv.put(DBConstant.C_Model_Id,getset.getModel());
-                  /*  cv.put(DBConstant.C_Retailer_Id,);*/
+                   cv.put(DBConstant.C_Retailer_Id,retailers.getRetailerId());
                     cv.put(DBConstant.C_Qty,getset.getQty());
                     cv.put(DBConstant.C_SaleDate,getDate());
+                    id = dbh.insertSecondry(cv);
                     ArrayList<String> imei=getset.getImei();
                     ContentValues cv1=new ContentValues();
                     for(String no:imei)
                     {
-                        /*cv1.put(DBConstant.C_Id);*/
+                        cv1.put(DBConstant.C_Id,id);
                         cv1.put(DBConstant.C_Imeino,no);
+                        dbh.insertSecondryImei(cv1);
                     }
                 }
             }

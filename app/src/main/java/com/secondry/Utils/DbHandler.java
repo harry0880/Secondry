@@ -172,6 +172,106 @@ public class DbHandler extends SQLiteOpenHelper {
         else return "fail";
     }
 
+
+    public String SyncSecondry() {
+        String res = null;
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + DBConstant.T_Secondry + ";", null);
+        String id;
+        if (cursor.getCount() <= 0) {
+            return "Empty";
+        } else {
+            cursor.moveToFirst();
+            do {
+                SoapObject request = new SoapObject(NameSpace, LoadMasterMathod);
+
+                id=cursor.getString(cursor.getColumnIndex(DBConstant.C_Id));
+                PropertyInfo pi = new PropertyInfo();
+
+                pi.setName("AndroidRowId");
+                pi.setValue(cursor.getString(cursor.getColumnIndex(DBConstant.C_Retailer_Id)));
+                pi.setType(String.class);
+                request.addProperty(pi);
+
+                pi.setName("AndroidRowId");
+                pi.setValue(cursor.getString(cursor.getColumnIndex(DBConstant.C_Model_Id)));
+                pi.setType(String.class);
+                request.addProperty(pi);
+
+                pi.setName("AndroidRowId");
+                pi.setValue(cursor.getString(cursor.getColumnIndex(DBConstant.C_Qty)));
+                pi.setType(String.class);
+                request.addProperty(pi);
+
+                pi.setName("AndroidRowId");
+                pi.setValue(cursor.getString(cursor.getColumnIndex(DBConstant.C_SaleDate)));
+                pi.setType(String.class);
+                request.addProperty(pi);
+
+                SoapSerializationEnvelope envolpe = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+                envolpe.dotNet = true;
+                envolpe.setOutputSoapObject(request);
+                HttpTransportSE androidHTTP = new HttpTransportSE(URL);
+
+                try {
+                    androidHTTP.call(SoapLinkMaster, envolpe);
+                    SoapPrimitive response = (SoapPrimitive) envolpe.getResponse();
+                    res = response.toString();
+                        SyncIMEI(res,id);
+                    //System.out.println(res);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return "Error";
+                }
+            } while (cursor.moveToNext());
+            return "Success";
+        }
+    }
+
+    public String SyncIMEI(String webid,String id) {
+        String res = null;
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + DBConstant.T_Imei + " where " + DBConstant.C_Id + "=" + id + ";", null);
+
+        if (cursor.getCount() <= 0) {
+            return "Empty";
+        } else {
+            cursor.moveToFirst();
+            do {
+                SoapObject request = new SoapObject(NameSpace, LoadMasterMathod);
+                PropertyInfo pi = new PropertyInfo();
+
+                pi.setName("AndroidRowId");
+                pi.setValue(webid);
+                pi.setType(String.class);
+                request.addProperty(pi);
+
+                pi.setName("AndroidRowId");
+                pi.setValue(cursor.getString(cursor.getColumnIndex(DBConstant.C_Imeino)));
+                pi.setType(String.class);
+                request.addProperty(pi);
+
+                SoapSerializationEnvelope envolpe = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+                envolpe.dotNet = true;
+                envolpe.setOutputSoapObject(request);
+                HttpTransportSE androidHTTP = new HttpTransportSE(URL);
+
+                try {
+                    androidHTTP.call(SoapLinkMaster, envolpe);
+                    SoapPrimitive response = (SoapPrimitive) envolpe.getResponse();
+                    res = response.toString();
+                    //System.out.println(res);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return "Error";
+                }
+            }while (cursor.moveToNext());
+            return "Success";
+        }
+    }
+
+
     Boolean SaveRetailer(String ReceivedfromWeb)
     {
         String[] retInfo=ReceivedfromWeb.split("#");
@@ -181,9 +281,29 @@ public class DbHandler extends SQLiteOpenHelper {
         SQLiteDatabase db=getWritableDatabase();
        if( db.insert(DBConstant.T_Retailer_Master,null,cv)==-1)
        {
+           db.close();
            return false;
        }
-        else return true;
+        else
+       {
+           db.close();
+           return true;
+       }
+    }
+
+    public String insertSecondry(ContentValues cv)
+    {
+    SQLiteDatabase db=getWritableDatabase();
+       long id= db.insert(DBConstant.T_Secondry,null,cv);
+        db.close();
+        return id+"";
+    }
+
+    public void insertSecondryImei(ContentValues cv)
+    {
+        SQLiteDatabase db=getWritableDatabase();
+       db.insert(DBConstant.T_Imei,null,cv);
+        db.close();
     }
 
 }

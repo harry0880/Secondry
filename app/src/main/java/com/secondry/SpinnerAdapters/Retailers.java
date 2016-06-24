@@ -5,6 +5,14 @@ package com.secondry.SpinnerAdapters;
  */
 public class Retailers {
 
+    public String getRetailerId() {
+        return RetailerId;
+    }
+
+    public void setRetailerId(String retailerId) {
+        RetailerId = retailerId;
+    }
+
     String RetailerId;
 
     public Retailers(String retailerId, String retailerName) {

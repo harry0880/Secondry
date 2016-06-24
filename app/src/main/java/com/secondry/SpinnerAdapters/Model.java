@@ -12,5 +12,13 @@ public class Model {
         ModelaName = modelaName;
     }
 
+    public String getModelId() {
+        return ModelId;
+    }
+
+    public void setModelId(String modelId) {
+        ModelId = modelId;
+    }
+
     String ModelaName;
 }
