@@ -51,6 +51,7 @@ SearchableSpinner spModel,spRetailers;
     DbHandler dbh;
     Model model;
     Retailers retailers;
+    ImageButton btnAddnewRetailer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -159,6 +160,13 @@ SearchableSpinner spModel,spRetailers;
                         .setAction("Action", null).show();
             }
         });
+
+        btnAddnewRetailer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EnterNewRetailer_View(v);
+            }
+        });
     }
 
     @Override
@@ -230,7 +238,7 @@ SearchableSpinner spModel,spRetailers;
         dialog.show();
     }
 
-    private void EnterNewRetailer_View(GetSetData getset, View v) {
+    private void EnterNewRetailer_View(View v) {
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -270,6 +278,7 @@ SearchableSpinner spModel,spRetailers;
         etImei=(EditText) findViewById(R.id.etImei);
         btnSave=(FancyButton) findViewById(R.id.btnSave);
         spRetailers=(SearchableSpinner) findViewById(R.id.spRetailer);
+        btnAddnewRetailer=(ImageButton) findViewById(R.id.btnAddNew);
     }
 
     @Override

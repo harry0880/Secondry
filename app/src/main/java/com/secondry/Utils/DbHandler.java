@@ -27,9 +27,16 @@ public class DbHandler extends SQLiteOpenHelper {
 
     final String NameSpace = "http://tempuri.org/";
     /* String URL="http://10.88.229.42:90/Service.asmx";*/
-    String URL = "http://demo.dpmuhry.gov.in/Service.asmx";
+    String URL = "http://192.168.0.100:88/Service.asmx";
     String LoadMasterMathod = "master";
     String SoapLinkMaster = "http://tempuri.org/master";
+
+    String getSaleEntryMethod = "getSaleEntry";
+    String SoapGetSaleEntry = "http://tempuri.org/getSaleEntry";
+
+    String getimeiMethod = "getimei";
+    String SoapGetimei = "http://tempuri.org/getimei";
+
     JSONObject jsonResponse;
 
     public DbHandler(Context context) {
@@ -141,13 +148,18 @@ public class DbHandler extends SQLiteOpenHelper {
         SoapObject request = new SoapObject(NameSpace, LoadMasterMathod);
         PropertyInfo pi = new PropertyInfo();
 
-        pi.setName("AndroidRowId");
+        pi.setName("Retailername");
         pi.setValue(RetailerName);
         pi.setType(String.class);
         request.addProperty(pi);
 
-        pi.setName("AndroidRowId");
+        pi.setName("retaileraddress");
         pi.setValue(RetailerAddress);
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi.setName("Userid");
+        pi.setValue("createdby");
         pi.setType(String.class);
         request.addProperty(pi);
 
@@ -183,28 +195,33 @@ public class DbHandler extends SQLiteOpenHelper {
         } else {
             cursor.moveToFirst();
             do {
-                SoapObject request = new SoapObject(NameSpace, LoadMasterMathod);
+                SoapObject request = new SoapObject(NameSpace, getSaleEntryMethod);
 
                 id=cursor.getString(cursor.getColumnIndex(DBConstant.C_Id));
                 PropertyInfo pi = new PropertyInfo();
 
-                pi.setName("AndroidRowId");
+                pi.setName("RetailerID");
                 pi.setValue(cursor.getString(cursor.getColumnIndex(DBConstant.C_Retailer_Id)));
                 pi.setType(String.class);
                 request.addProperty(pi);
 
-                pi.setName("AndroidRowId");
+                pi.setName("ModelId");
                 pi.setValue(cursor.getString(cursor.getColumnIndex(DBConstant.C_Model_Id)));
                 pi.setType(String.class);
                 request.addProperty(pi);
 
-                pi.setName("AndroidRowId");
+                pi.setName("Qty");
                 pi.setValue(cursor.getString(cursor.getColumnIndex(DBConstant.C_Qty)));
                 pi.setType(String.class);
                 request.addProperty(pi);
 
-                pi.setName("AndroidRowId");
+                pi.setName("Saledate");
                 pi.setValue(cursor.getString(cursor.getColumnIndex(DBConstant.C_SaleDate)));
+                pi.setType(String.class);
+                request.addProperty(pi);
+
+                pi.setName("CreatedBy");
+                pi.setValue("createdBy");
                 pi.setType(String.class);
                 request.addProperty(pi);
 
@@ -214,7 +231,7 @@ public class DbHandler extends SQLiteOpenHelper {
                 HttpTransportSE androidHTTP = new HttpTransportSE(URL);
 
                 try {
-                    androidHTTP.call(SoapLinkMaster, envolpe);
+                    androidHTTP.call(SoapGetSaleEntry, envolpe);
                     SoapPrimitive response = (SoapPrimitive) envolpe.getResponse();
                     res = response.toString();
                         SyncIMEI(res,id);
@@ -239,16 +256,21 @@ public class DbHandler extends SQLiteOpenHelper {
         } else {
             cursor.moveToFirst();
             do {
-                SoapObject request = new SoapObject(NameSpace, LoadMasterMathod);
+                SoapObject request = new SoapObject(NameSpace, getimeiMethod);
                 PropertyInfo pi = new PropertyInfo();
 
-                pi.setName("AndroidRowId");
+                pi.setName("saleid");
                 pi.setValue(webid);
                 pi.setType(String.class);
                 request.addProperty(pi);
 
-                pi.setName("AndroidRowId");
+                pi.setName("imei");
                 pi.setValue(cursor.getString(cursor.getColumnIndex(DBConstant.C_Imeino)));
+                pi.setType(String.class);
+                request.addProperty(pi);
+
+                pi.setName("Userid");
+                pi.setValue("createdBy");
                 pi.setType(String.class);
                 request.addProperty(pi);
 
@@ -258,7 +280,7 @@ public class DbHandler extends SQLiteOpenHelper {
                 HttpTransportSE androidHTTP = new HttpTransportSE(URL);
 
                 try {
-                    androidHTTP.call(SoapLinkMaster, envolpe);
+                    androidHTTP.call(SoapGetimei, envolpe);
                     SoapPrimitive response = (SoapPrimitive) envolpe.getResponse();
                     res = response.toString();
                     //System.out.println(res);

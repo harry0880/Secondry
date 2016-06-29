@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/layout_root" android:orientation="horizontal"
+    android:id="@+id/layout_root" android:orientation="vertical"
     android:layout_width="fill_parent" android:layout_height="fill_parent"
     android:padding="10dp">
     <android.support.design.widget.TextInputLayout
@@ -32,7 +32,7 @@
             android:id="@+id/etRetailerAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Retailer Name"
+            android:hint="Retailer Address"
             android:imeActionLabel="Serial number"
             android:imeOptions="actionUnspecified"
             android:inputType="number"
