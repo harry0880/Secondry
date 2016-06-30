@@ -21,4 +21,9 @@ public class Retailers {
     }
 
     String RetailerName;
+
+    public String toString()
+    {
+        return RetailerName;
+    }
 }

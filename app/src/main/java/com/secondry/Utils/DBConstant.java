@@ -15,6 +15,7 @@ public class DBConstant {
     public static final String T_Retailer_Master="RetailerMaster";
     public static final String C_Retailer_Id="RetailerId";
     public static final String C_Retailer_Name="RetailerName";
+    public static final String C_Retailer_Address="RetailerAddress";
 
     public static final String T_Secondry="Secondry";
     public static final String C_Id="_id";
@@ -24,7 +25,7 @@ public class DBConstant {
     public static final String T_Imei="Imei";
     public static final String C_Imeino ="Imeino";
 
-    public static final String Create_Table_Secondry="Create Table "+T_Secondry+" ("+C_Id+ " TEXT,"
+    public static final String Create_Table_Secondry="Create Table "+T_Secondry+" ("+C_Id+ " INTEGER PRIMARY KEY AUTOINCREMENT,"
             +C_Retailer_Id+" TEXT,"
             +C_Model_Id+" TEXT,"
             +C_Qty+" TEXT,"

@@ -21,4 +21,9 @@ public class Model {
     }
 
     String ModelaName;
+
+    public String toString()
+    {
+        return ModelaName;
+    }
 }

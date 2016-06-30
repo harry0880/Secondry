@@ -4,6 +4,9 @@
     package="com.secondry">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-feature android:name="android.hardware.camera.autofocus"/>
 
     <application
         android:allowBackup="true"
@@ -16,11 +19,7 @@
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".Utils.SimpleScannerFragmentActivity"
@@ -30,7 +29,14 @@
             android:name=".AddRetailer"
             android:label="@string/title_activity_add_retailer"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".Utils.Splash"></activity>
+        <activity android:name=".Utils.Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Utils.AndroidDatabaseManager"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

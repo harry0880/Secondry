@@ -7,4 +7,10 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/Sync"
+        android:title="Sync"
+        android:icon="@drawable/sync"
+        app:showAsAction="always"
+        />
 </menu>

@@ -27,6 +27,7 @@ import com.secondry.GetterSetter.GetSetData;
 import com.secondry.GetterSetter.IMEI;
 import com.secondry.SpinnerAdapters.Model;
 import com.secondry.SpinnerAdapters.Retailers;
+import com.secondry.Utils.AndroidDatabaseManager;
 import com.secondry.Utils.DBConstant;
 import com.secondry.Utils.DbHandler;
 import com.secondry.Utils.SimpleScannerFragmentActivity;
@@ -52,6 +53,7 @@ SearchableSpinner spModel,spRetailers;
     Model model;
     Retailers retailers;
     ImageButton btnAddnewRetailer;
+    ArrayAdapter<Retailers> Retaileradapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -188,7 +190,7 @@ SearchableSpinner spModel,spRetailers;
     {
         Calendar c = Calendar.getInstance();
         System.out.println("Current time => " + c.getTime());
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = df.format(c.getTime());
         return formattedDate;
     }
@@ -197,12 +199,12 @@ SearchableSpinner spModel,spRetailers;
         ArrayList<String> ar=new ArrayList<>();
         ar.add("MOB1");
         ar.add("MOB2");
-       /* ArrayAdapter<Model> adapter=new ArrayAdapter<Model>(this, android.R.layout.simple_spinner_item, db.getModelList();)
+        ArrayAdapter<Model> adapter=new ArrayAdapter<Model>(this, android.R.layout.simple_spinner_item, dbh.getModelList());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spModel.setAdapter(adapter);*/
-        ArrayAdapter<String> Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ar);
+        spModel.setAdapter(adapter);
+    /*    ArrayAdapter<String> Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ar);
         Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spModel.setAdapter(Adapter);
+        spModel.setAdapter(Adapter);*/
     }
 
     void setRetailers()
@@ -210,12 +212,12 @@ SearchableSpinner spModel,spRetailers;
         ArrayList<String> ar=new ArrayList<>();
         ar.add("MOB1");
         ar.add("MOB2");
-       /* ArrayAdapter<Retailers> adapter=new ArrayAdapter<Model>(this, android.R.layout.simple_spinner_item, db.getRetailerList();)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spModel.setAdapter(adapter);*/
-        ArrayAdapter<String> Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ar);
+        Retaileradapter=new ArrayAdapter<Retailers>(this, android.R.layout.simple_spinner_item, dbh.getRetailerList());
+        Retaileradapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spRetailers.setAdapter(Retaileradapter);
+       /* ArrayAdapter<String> Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ar);
         Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spRetailers.setAdapter(Adapter);
+        spRetailers.setAdapter(Adapter);*/
     }
 
       private void loadView(GetSetData getset, View v) {
@@ -299,6 +301,12 @@ SearchableSpinner spModel,spRetailers;
         if (id == R.id.action_settings) {
             return true;
         }
+        switch (item.getItemId())
+        {
+            case R.id.Sync:
+                new SyncData().execute();
+                break;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -311,6 +319,7 @@ ProgressDialog dialog=new ProgressDialog(context);
         @Override
         protected void onPreExecute() {
             dialog.setTitle("Please wait!!!");
+            dialog.setCanceledOnTouchOutside(false);
             dialog.show();
             super.onPreExecute();
         }
@@ -335,8 +344,51 @@ ProgressDialog dialog=new ProgressDialog(context);
             }
             else {
               new SweetAlertDialog(context,SweetAlertDialog.SUCCESS_TYPE).setContentText("Added Successfully").show();
+                Retaileradapter.notifyDataSetChanged();
             }
             super.onPostExecute(s);
         }
+    }
+
+    private class SyncData extends AsyncTask<Void,Void,String>
+    {
+        ProgressDialog dialog =new ProgressDialog(MainActivity.this);
+
+        @Override
+        protected String doInBackground(Void... params) {
+            return  dbh.SyncSecondry();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            if(dialog.isShowing())
+                dialog.dismiss();
+            dialog.setTitle("Syncing Data");
+            dialog.setMessage("Please Wait");
+            dialog.show();
+            dialog.setCanceledOnTouchOutside(false);
+
+            super.onPreExecute();
+        }
+
+
+        @Override
+        protected void onPostExecute(String s) {
+            dialog.dismiss();
+            if(s.equals("Success") )
+            {
+                new SweetAlertDialog(MainActivity.this,SweetAlertDialog.SUCCESS_TYPE).setTitleText("Synced").show();
+            }
+            else {
+                new SweetAlertDialog(MainActivity.this,SweetAlertDialog.ERROR_TYPE).setTitleText("Sync Failed").show();
+            }
+            super.onPostExecute(s);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(context, AndroidDatabaseManager.class));
+        super.onBackPressed();
     }
 }

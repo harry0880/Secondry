@@ -3,8 +3,10 @@ package com.secondry.Utils;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.secondry.SpinnerAdapters.Model;
 import com.secondry.SpinnerAdapters.Retailers;
@@ -27,7 +29,7 @@ public class DbHandler extends SQLiteOpenHelper {
 
     final String NameSpace = "http://tempuri.org/";
     /* String URL="http://10.88.229.42:90/Service.asmx";*/
-    String URL = "http://192.168.0.100:88/Service.asmx";
+    String URL = "http://192.168.0.101:88/Service.asmx";
     String LoadMasterMathod = "master";
     String SoapLinkMaster = "http://tempuri.org/master";
 
@@ -36,6 +38,9 @@ public class DbHandler extends SQLiteOpenHelper {
 
     String getimeiMethod = "getimei";
     String SoapGetimei = "http://tempuri.org/getimei";
+
+    String getretailerMethod = "getretailer";
+    String Soapgetretailer = "http://tempuri.org/getretailer";
 
     JSONObject jsonResponse;
 
@@ -117,8 +122,8 @@ public class DbHandler extends SQLiteOpenHelper {
                     ContentValues values = new ContentValues();
                     JSONObject jsonChildNode = jsonMainNode.getJSONObject(j);
                     if (i == 0) {
-                        values.put(DBConstant.C_Model_Id, jsonChildNode.optString("dcode_ds").toString());
-                        values.put(DBConstant.C_Model_Model_Name, jsonChildNode.optString("ds_detail").toString());
+                        values.put(DBConstant.C_Model_Id, jsonChildNode.optString("Model_id").toString());
+                        values.put(DBConstant.C_Model_Model_Name, jsonChildNode.optString("Model_name").toString());
                         SQLiteDatabase writeableDB = getWritableDatabase();
                         writeableDB.insert(DBConstant.T_Model_Master, null, values);
                         writeableDB.close();
@@ -126,8 +131,8 @@ public class DbHandler extends SQLiteOpenHelper {
                     }
                     if (i == 1) {
 
-                        values.put(DBConstant.C_Retailer_Id, jsonChildNode.optString("Retailer_id").toString());
-                        values.put(DBConstant.C_Retailer_Name, jsonChildNode.optString("Institutetype_detail").toString());
+                        values.put(DBConstant.C_Retailer_Id, jsonChildNode.optString("Retailerid").toString());
+                        values.put(DBConstant.C_Retailer_Name, jsonChildNode.optString("RetailerName").toString());
                         SQLiteDatabase writeableDB = getWritableDatabase();
                         writeableDB.insert(DBConstant.T_Retailer_Master, null, values);
                         writeableDB.close();
@@ -145,7 +150,7 @@ public class DbHandler extends SQLiteOpenHelper {
 
     public String AddNewRetailer(String RetailerName, String RetailerAddress) {
         String res = null;
-        SoapObject request = new SoapObject(NameSpace, LoadMasterMathod);
+        SoapObject request = new SoapObject(NameSpace, getretailerMethod);
         PropertyInfo pi = new PropertyInfo();
 
         pi.setName("Retailername");
@@ -153,11 +158,13 @@ public class DbHandler extends SQLiteOpenHelper {
         pi.setType(String.class);
         request.addProperty(pi);
 
+        pi = new PropertyInfo();
         pi.setName("retaileraddress");
         pi.setValue(RetailerAddress);
         pi.setType(String.class);
         request.addProperty(pi);
 
+        pi = new PropertyInfo();
         pi.setName("Userid");
         pi.setValue("createdby");
         pi.setType(String.class);
@@ -169,7 +176,7 @@ public class DbHandler extends SQLiteOpenHelper {
         HttpTransportSE androidHTTP = new HttpTransportSE(URL);
 
         try {
-            androidHTTP.call(SoapLinkMaster, envolpe);
+            androidHTTP.call(Soapgetretailer, envolpe);
             SoapPrimitive response = (SoapPrimitive) envolpe.getResponse();
             res = response.toString();
             //System.out.println(res);
@@ -183,6 +190,7 @@ public class DbHandler extends SQLiteOpenHelper {
         }
         else return "fail";
     }
+
 
 
     public String SyncSecondry() {
@@ -205,21 +213,25 @@ public class DbHandler extends SQLiteOpenHelper {
                 pi.setType(String.class);
                 request.addProperty(pi);
 
+                pi = new PropertyInfo();
                 pi.setName("ModelId");
                 pi.setValue(cursor.getString(cursor.getColumnIndex(DBConstant.C_Model_Id)));
                 pi.setType(String.class);
                 request.addProperty(pi);
 
+                pi = new PropertyInfo();
                 pi.setName("Qty");
                 pi.setValue(cursor.getString(cursor.getColumnIndex(DBConstant.C_Qty)));
                 pi.setType(String.class);
                 request.addProperty(pi);
 
+                pi = new PropertyInfo();
                 pi.setName("Saledate");
                 pi.setValue(cursor.getString(cursor.getColumnIndex(DBConstant.C_SaleDate)));
                 pi.setType(String.class);
                 request.addProperty(pi);
 
+                pi = new PropertyInfo();
                 pi.setName("CreatedBy");
                 pi.setValue("createdBy");
                 pi.setType(String.class);
@@ -326,6 +338,47 @@ public class DbHandler extends SQLiteOpenHelper {
         SQLiteDatabase db=getWritableDatabase();
        db.insert(DBConstant.T_Imei,null,cv);
         db.close();
+    }
+
+    public ArrayList<Cursor> getData(String Query) {
+        //get writable database
+        SQLiteDatabase sqlDB = this.getWritableDatabase();
+        String[] columns = new String[] { "mesage" };
+        //an array list of cursor to save two cursors one has results from the query
+        //other cursor stores error message if any errors are triggered
+        ArrayList<Cursor> alc = new ArrayList<Cursor>(2);
+        MatrixCursor Cursor2= new MatrixCursor(columns);
+        alc.add(null);
+        alc.add(null);
+
+
+        try{
+            String maxQuery = Query ;
+            //execute the query results will be save in Cursor c
+            Cursor c = sqlDB.rawQuery(maxQuery, null);
+
+
+            //add value to cursor2
+            Cursor2.addRow(new Object[] { "Success" });
+
+            alc.set(1,Cursor2);
+            if (null != c && c.getCount() > 0) {
+
+
+                alc.set(0,c);
+                c.moveToFirst();
+
+                return alc ;
+            }
+            return alc;
+        } catch(Exception sqlEx){
+            Log.d("printing exception", sqlEx.getMessage());
+            //if any exceptions are triggered save the error message to cursor an return the arraylist
+            Cursor2.addRow(new Object[] { ""+sqlEx.getMessage() });
+            alc.set(1,Cursor2);
+            return alc;
+        }
+
     }
 
 }
