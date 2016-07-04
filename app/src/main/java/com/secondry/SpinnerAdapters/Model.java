@@ -20,6 +20,10 @@ public class Model {
         ModelId = modelId;
     }
 
+    public String getModelaName() {
+        return ModelaName;
+    }
+
     String ModelaName;
 
     public String toString()

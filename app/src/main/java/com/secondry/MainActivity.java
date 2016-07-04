@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -23,7 +22,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.secondry.GetterSetter.GetSetData;
 import com.secondry.GetterSetter.IMEI;
@@ -105,59 +103,44 @@ SearchableSpinner spModel,spRetailers;
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (spRetailers.getSelectedItemPosition() != 0 && spModel.getSelectedItemPosition() != 0 && !etQty.getText().toString().trim().equals("")
-                        && !etImei.getText().toString().trim().equals("")) {
-                    ArrayList<String> imeino = new ArrayList<String>();
-                    String[] arr = etImei.getText().toString().split("\n");
-                    if (Integer.parseInt(etQty.getText().toString()) == (arr.length)) {
-                        for (String ar : arr) {
-                            imeino.add(ar);
-                        }
-                        data.add(new GetSetData(model.getModelId(), etQty.getText().toString(), imeino));
-                        adapter.notifyDataSetChanged();
-                        etQty.setText("");
-                        etImei.setText("");
-                    } else {
-                        Snackbar.make(v, "Qty and IMEI count don't match", Snackbar.LENGTH_LONG).show();
-                    }
-                }
+            ArrayList<String> imeino=new ArrayList<String>();
+                String[] arr=etImei.getText().toString().split("\n");
+               if(Integer.parseInt(etQty.getText().toString()) == (arr.length)) {
+                   for (String ar : arr) {
+                       imeino.add(ar);
+                   }
+                   data.add(new GetSetData(model.getModelId(), etQty.getText().toString(), imeino));
+                   adapter.notifyDataSetChanged();
+                   etQty.setText("");
+                   etImei.setText("");
+               }
                 else
-                {
-                    Snackbar.make(v, "Please Enter All fields!!!", Snackbar.LENGTH_LONG).show();
-                }
+               {
+                   Snackbar.make(v,"Qty and IMEI count don't match",Snackbar.LENGTH_LONG).show();
+               }
             }
-
         });
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             String id;
             @Override
             public void onClick(View v) {
-
-                if(lv.getCount()>0) {
-                    for (GetSetData getset : data) {
-                        ContentValues cv = new ContentValues();
-                        cv.put(DBConstant.C_Model_Id, getset.getModel());
-                        cv.put(DBConstant.C_Retailer_Id, retailers.getRetailerId());
-                        cv.put(DBConstant.C_Qty, getset.getQty());
-                        cv.put(DBConstant.C_SaleDate, getDate());
-                        id = dbh.insertSecondry(cv);
-                        ArrayList<String> imei = getset.getImei();
-                        ContentValues cv1 = new ContentValues();
-                        for (String no : imei) {
-                            cv1.put(DBConstant.C_Id, id);
-                            cv1.put(DBConstant.C_Imeino, no);
-                            dbh.insertSecondryImei(cv1);
-                        }
-                    }
-                    btnSave.setEnabled(false);
-                    btnSave.setBackgroundColor(Color.parseColor("#FF63727B"));
-                    btnSubmit.setEnabled(false);
-                    btnSubmit.setBackgroundColor(Color.parseColor("#FF63727B"));
-                }
-                else
+                for(GetSetData getset:data)
                 {
-                    Toast.makeText(context,"No data to save",Toast.LENGTH_SHORT).show();
+                    ContentValues cv=new ContentValues();
+                    cv.put(DBConstant.C_Model_Id,getset.getModel());
+                   cv.put(DBConstant.C_Retailer_Id,retailers.getRetailerId());
+                    cv.put(DBConstant.C_Qty,getset.getQty());
+                    cv.put(DBConstant.C_SaleDate,getDate());
+                    id = dbh.insertSecondry(cv);
+                    ArrayList<String> imei=getset.getImei();
+                    ContentValues cv1=new ContentValues();
+                    for(String no:imei)
+                    {
+                        cv1.put(DBConstant.C_Id,id);
+                        cv1.put(DBConstant.C_Imeino,no);
+                        dbh.insertSecondryImei(cv1);
+                    }
                 }
             }
         });
@@ -175,12 +158,8 @@ SearchableSpinner spModel,spRetailers;
                    fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                data.clear();
-                adapter.notifyDataSetChanged();
-                btnSave.setEnabled(true);
-                btnSave.setBackgroundColor(Color.parseColor("#303F9F"));
-                btnSubmit.setEnabled(true);
-                btnSubmit.setBackgroundColor(Color.parseColor("##303F9F"));
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         });
 
@@ -217,7 +196,9 @@ SearchableSpinner spModel,spRetailers;
     }
     void setModel()
     {
-
+        ArrayList<String> ar=new ArrayList<>();
+        ar.add("MOB1");
+        ar.add("MOB2");
         ArrayAdapter<Model> adapter=new ArrayAdapter<Model>(this, android.R.layout.simple_spinner_item, dbh.getModelList());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spModel.setAdapter(adapter);
@@ -228,7 +209,9 @@ SearchableSpinner spModel,spRetailers;
 
     void setRetailers()
     {
-
+        ArrayList<String> ar=new ArrayList<>();
+        ar.add("MOB1");
+        ar.add("MOB2");
         Retaileradapter=new ArrayAdapter<Retailers>(this, android.R.layout.simple_spinner_item, dbh.getRetailerList());
         Retaileradapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spRetailers.setAdapter(Retaileradapter);
