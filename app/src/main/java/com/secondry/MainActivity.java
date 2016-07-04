@@ -54,6 +54,7 @@ SearchableSpinner spModel,spRetailers;
     Retailers retailers;
     ImageButton btnAddnewRetailer;
     ArrayAdapter<Retailers> Retaileradapter;
+    ViewGroup.LayoutParams lvp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,7 +110,8 @@ SearchableSpinner spModel,spRetailers;
                    for (String ar : arr) {
                        imeino.add(ar);
                    }
-                   data.add(new GetSetData(model.getModelId(), etQty.getText().toString(), imeino));
+                   lvp.height = lv.getHeight() + 100;
+                   data.add(new GetSetData(model.getModelaName(), etQty.getText().toString(), imeino));
                    adapter.notifyDataSetChanged();
                    etQty.setText("");
                    etImei.setText("");
@@ -281,6 +283,7 @@ SearchableSpinner spModel,spRetailers;
         btnSave=(FancyButton) findViewById(R.id.btnSave);
         spRetailers=(SearchableSpinner) findViewById(R.id.spRetailer);
         btnAddnewRetailer=(ImageButton) findViewById(R.id.btnAddNew);
+        lvp=(ViewGroup.LayoutParams)lv.getLayoutParams();
     }
 
     @Override

@@ -29,7 +29,7 @@ public class DbHandler extends SQLiteOpenHelper {
 
     final String NameSpace = "http://tempuri.org/";
     /* String URL="http://10.88.229.42:90/Service.asmx";*/
-    String URL = "http://192.168.0.101:88/Service.asmx";
+    String URL = "http://www.gurukirpa.somee.com/Service.asmx";
     String LoadMasterMathod = "master";
     String SoapLinkMaster = "http://tempuri.org/master";
 
