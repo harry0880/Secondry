@@ -42,6 +42,9 @@ public class DbHandler extends SQLiteOpenHelper {
     String getretailerMethod = "getretailer";
     String Soapgetretailer = "http://tempuri.org/getretailer";
 
+    String getcount = "getcount";
+    String Soapgetcount = "http://tempuri.org/getcount";
+
     JSONObject jsonResponse;
 
     public DbHandler(Context context) {
@@ -113,6 +116,9 @@ public class DbHandler extends SQLiteOpenHelper {
         String[] Response = res.split("#"), JsonNames = {"Model", "Retailer"};
         int lengthJsonArr;
         try {
+            SQLiteDatabase db=getWritableDatabase();
+            db.execSQL("delete from "+DBConstant.T_Retailer_Master);
+            db.execSQL("delete from "+DBConstant.T_Model_Master);
             for (int i = 0; i < JsonNames.length; i++) {
                 Response[i] = "{ \"" + JsonNames[i] + "\" :" + Response[i] + " }";
                 jsonResponse = new JSONObject(Response[i]);
@@ -276,11 +282,13 @@ public class DbHandler extends SQLiteOpenHelper {
                 pi.setType(String.class);
                 request.addProperty(pi);
 
+                pi = new PropertyInfo();
                 pi.setName("imei");
                 pi.setValue(cursor.getString(cursor.getColumnIndex(DBConstant.C_Imeino)));
                 pi.setType(String.class);
                 request.addProperty(pi);
 
+                pi = new PropertyInfo();
                 pi.setName("Userid");
                 pi.setValue("createdBy");
                 pi.setType(String.class);
@@ -323,6 +331,48 @@ public class DbHandler extends SQLiteOpenHelper {
            db.close();
            return true;
        }
+    }
+
+    public String MatchCount()
+    {
+        String res;
+        SQLiteDatabase db=getReadableDatabase();
+        Cursor cursor=db.rawQuery("select * from "+DBConstant.T_Model_Master,null);
+        String modelcnt=cursor.getCount()+"";
+        cursor=db.rawQuery("select * from "+DBConstant.T_Retailer_Master,null);
+        String retailercnt=cursor.getCount()+"";
+        SoapObject request = new SoapObject(NameSpace, getcount);
+        PropertyInfo pi = new PropertyInfo();
+
+        pi.setName("ModelCount");
+        pi.setValue(modelcnt);
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("RetailerCount");
+        pi.setValue(retailercnt);
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+
+        SoapSerializationEnvelope envolpe = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+        envolpe.dotNet = true;
+        envolpe.setOutputSoapObject(request);
+        HttpTransportSE androidHTTP = new HttpTransportSE(URL);
+
+        try {
+            androidHTTP.call(Soapgetcount, envolpe);
+            SoapPrimitive response = (SoapPrimitive) envolpe.getResponse();
+            res = response.toString();
+            if(res.equals("false"))
+            return "true";
+            else
+            return "false";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "error";
+        }
     }
 
     public String insertSecondry(ContentValues cv)

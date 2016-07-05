@@ -13,4 +13,10 @@
         android:icon="@drawable/sync"
         app:showAsAction="always"
         />
+    <item
+        android:id="@+id/Update"
+        android:title="Sync"
+        android:icon="@drawable/sync"
+        app:showAsAction="always"
+        />
 </menu>

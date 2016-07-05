@@ -105,7 +105,7 @@ SearchableSpinner spModel,spRetailers;
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (spRetailers.getSelectedItemPosition() != 0 && spModel.getSelectedItemPosition() != 0 && !etQty.getText().toString().trim().equals("")
+                if (spRetailers.getSelectedItemPosition() >= 0 && spModel.getSelectedItemPosition() >= 0 && !etQty.getText().toString().trim().equals("")
                         && !etImei.getText().toString().trim().equals("")) {
                     ArrayList<String> imeino = new ArrayList<String>();
                     String[] arr = etImei.getText().toString().split("\n");
@@ -113,7 +113,7 @@ SearchableSpinner spModel,spRetailers;
                         for (String ar : arr) {
                             imeino.add(ar);
                         }
-                        data.add(new GetSetData(model.getModelId(), etQty.getText().toString(), imeino));
+                        data.add(new GetSetData(model.getModelaName(), etQty.getText().toString(), imeino));
                         adapter.notifyDataSetChanged();
                         etQty.setText("");
                         etImei.setText("");
@@ -122,8 +122,8 @@ SearchableSpinner spModel,spRetailers;
                     }
                 } else {
                     {
-                                            Snackbar.make(v, "Please Enter All fields!!!", Snackbar.LENGTH_LONG).show();
-                                        }
+                       Snackbar.make(v, "Please Enter All fields!!!", Snackbar.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -176,7 +176,7 @@ SearchableSpinner spModel,spRetailers;
                 data.clear();
                                 adapter.notifyDataSetChanged();
                                 btnSave.setEnabled(true);
-                               btnSave.setBackgroundColor(Color.parseColor("#303F9F"));
+                                btnSave.setBackgroundColor(Color.parseColor("#303F9F"));
                                 btnSubmit.setEnabled(true);
                                 btnSubmit.setBackgroundColor(Color.parseColor("#303F9F"));
             }
@@ -325,6 +325,10 @@ SearchableSpinner spModel,spRetailers;
             case R.id.Sync:
                 new SyncData().execute();
                 break;
+            case R.id.Update:
+                new getMasterCount().execute();
+                break;
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -400,6 +404,77 @@ ProgressDialog dialog=new ProgressDialog(context);
             }
             else {
                 new SweetAlertDialog(MainActivity.this,SweetAlertDialog.ERROR_TYPE).setTitleText("Sync Failed").show();
+            }
+            super.onPostExecute(s);
+        }
+    }
+
+    private class getMasterCount extends AsyncTask<Void,Void,String>
+    {
+
+        ProgressDialog dialog=new ProgressDialog(context);
+        @Override
+        protected void onPreExecute() {
+            dialog.setTitle("Checking");
+            dialog.show();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            return dbh.MatchCount();
+    }
+
+        @Override
+        protected void onPostExecute(String aBoolean) {
+           dialog.dismiss();
+            if(aBoolean.equals("true"))
+            {
+                new getMaster_Tables().execute();
+            }
+            else if(aBoolean.equals("false"))
+            {
+                Toast.makeText(context,"Data is updated",Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                new SweetAlertDialog(context,SweetAlertDialog.ERROR_TYPE).setTitleText("No internet Connection");
+            }
+            super.onPostExecute(aBoolean);
+        }
+    }
+
+    private class getMaster_Tables extends AsyncTask<Void,Void,String>
+    {
+        ProgressDialog dialog=new ProgressDialog(context);
+        @Override
+        protected void onPreExecute() {
+            dialog.setMessage("Updating");
+            dialog.show();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            return dbh.Load_Master_tables();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+           dialog.dismiss();
+            if(s.equals("Error"))
+            {
+                new SweetAlertDialog(context,SweetAlertDialog.ERROR_TYPE).setTitleText("No Internet Connection").show();
+            }
+            else if(s.equals("ErrorServer"))
+            {
+                new SweetAlertDialog(context,SweetAlertDialog.ERROR_TYPE).setTitleText("Unable to connect with Server!!!").show();
+            }
+            else {
+               Toast.makeText(context,"Data is up to date",Toast.LENGTH_SHORT).show();
+                setRetailers();
+                setModel();
             }
             super.onPostExecute(s);
         }
