@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+
+   >
+
+    <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="425dp"
+        android:background="@color/colorPrimaryDark"
+        android:id="@+id/rl1"
+ >
+        <android.support.design.widget.TextInputLayout
+            android:layout_centerInParent="true"
+            android:id="@+id/llID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="20"
+        android:hint="User Name"
+        android:imeOptions="actionUnspecified"
+        android:inputType="none"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginBottom="10dp"
+            android:background="#ffffff"
+            android:paddingTop="5dp"
+            android:paddingLeft="5dp"
+            android:paddingBottom="5dp"
+            android:paddingRight="5dp"
+            >
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/etusername"
+            android:background="#00000000"
+            android:singleLine="true"
+            />
+    </android.support.design.widget.TextInputLayout>
+
+
+</RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_below="@+id/rl1"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <mehdi.sakout.fancybuttons.FancyButton
+            android:layout_centerInParent="true"
+            android:id="@+id/btnSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp"
+            fancy:fb_borderColor="#FFFFFF"
+            fancy:fb_borderWidth="1dp"
+            fancy:fb_defaultColor="@color/colorPrimaryDark"
+            fancy:fb_focusColor="@color/colorPrimary"
+            fancy:fb_iconPosition="left"
+            fancy:fb_radius="30dp"
+            fancy:fb_text="Submit"
+            fancy:fb_textColor="#FFFFFF"
+
+            android:layout_gravity="center"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+
+            />
+
+    </RelativeLayout>
+
+</RelativeLayout>

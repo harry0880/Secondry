@@ -57,6 +57,7 @@ public class DbHandler extends SQLiteOpenHelper {
         db.execSQL(DBConstant.Create_Table_Model);
         db.execSQL(DBConstant.Create_Table_Retailer);
         db.execSQL(DBConstant.Create_Table_Imei);
+        db.execSQL(DBConstant.Create_Table_User);
     }
 
     @Override
@@ -198,11 +199,27 @@ public class DbHandler extends SQLiteOpenHelper {
     }
 
 
+    public void insert_user(String user)
+    {
+        SQLiteDatabase db=getWritableDatabase();
+        ContentValues cv=new ContentValues();
+        cv.put(DBConstant.C_User,user);
+        db.insert(DBConstant.T_User,null,cv);
+    }
+
 
     public String SyncSecondry() {
         String res = null;
+        String user;
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from " + DBConstant.T_Secondry + ";", null);
+        Cursor cursor2=db.rawQuery("select * from " + DBConstant.T_User + ";", null);
+        if(cursor2.getCount()>0)
+        {
+            cursor2.moveToFirst();
+            user=cursor2.getString(0);
+        }
+        else user="NA";
         String id;
         if (cursor.getCount() <= 0) {
             return "Empty";
@@ -239,7 +256,7 @@ public class DbHandler extends SQLiteOpenHelper {
 
                 pi = new PropertyInfo();
                 pi.setName("CreatedBy");
-                pi.setValue("createdBy");
+                pi.setValue(user);
                 pi.setType(String.class);
                 request.addProperty(pi);
 
@@ -253,12 +270,12 @@ public class DbHandler extends SQLiteOpenHelper {
                     SoapPrimitive response = (SoapPrimitive) envolpe.getResponse();
                     res = response.toString();
                         SyncIMEI(res,id);
-                    //System.out.println(res);
                 } catch (Exception e) {
                     e.printStackTrace();
                     return "Error";
                 }
             } while (cursor.moveToNext());
+            db.close();
             return "Success";
         }
     }
@@ -309,8 +326,17 @@ public class DbHandler extends SQLiteOpenHelper {
                     return "Error";
                 }
             }while (cursor.moveToNext());
+            db.close();
             return "Success";
         }
+    }
+
+    public void clearSecondryTable()
+    {
+        SQLiteDatabase db=getWritableDatabase();
+        String qry="delete from "+DBConstant.T_Secondry;
+        db.execSQL(qry);
+        db.close();
     }
 
 

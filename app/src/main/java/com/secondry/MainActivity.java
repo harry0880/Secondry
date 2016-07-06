@@ -51,6 +51,7 @@ SearchableSpinner spModel,spRetailers;
     ArrayList<GetSetData> data;
     ListView lv;
     Context context;
+
     DbHandler dbh;
     Model model;
     Retailers retailers;
@@ -62,6 +63,7 @@ SearchableSpinner spModel,spRetailers;
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getDate();
         initialize();
         setModel();
         setRetailers();
@@ -209,7 +211,7 @@ SearchableSpinner spModel,spRetailers;
     {
         Calendar c = Calendar.getInstance();
         System.out.println("Current time => " + c.getTime());
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formattedDate = df.format(c.getTime());
         return formattedDate;
     }
@@ -323,12 +325,19 @@ SearchableSpinner spModel,spRetailers;
         switch (item.getItemId())
         {
             case R.id.Sync:
-                new SyncData().execute();
+                new SweetAlertDialog(context,SweetAlertDialog.WARNING_TYPE).setTitleText("Ae you Sure!!!").setContentText("Sync Data?")
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        new SyncData().execute();
+                        sweetAlertDialog.dismissWithAnimation();
+                    }
+                }).show();
+
                 break;
             case R.id.Update:
                 new getMasterCount().execute();
                 break;
-
         }
 
         return super.onOptionsItemSelected(item);
@@ -337,9 +346,7 @@ SearchableSpinner spModel,spRetailers;
     private class SaveRetailer extends AsyncTask<String,Void,String>
     {
 ProgressDialog dialog=new ProgressDialog(context);
-
-
-        @Override
+  @Override
         protected void onPreExecute() {
             dialog.setTitle("Please wait!!!");
             dialog.setCanceledOnTouchOutside(false);
@@ -367,7 +374,7 @@ ProgressDialog dialog=new ProgressDialog(context);
             }
             else {
               new SweetAlertDialog(context,SweetAlertDialog.SUCCESS_TYPE).setContentText("Added Successfully").show();
-                Retaileradapter.notifyDataSetChanged();
+                setRetailers();
             }
             super.onPostExecute(s);
         }
@@ -401,6 +408,7 @@ ProgressDialog dialog=new ProgressDialog(context);
             if(s.equals("Success") )
             {
                 new SweetAlertDialog(MainActivity.this,SweetAlertDialog.SUCCESS_TYPE).setTitleText("Synced").show();
+                dbh.clearSecondryTable();
             }
             else {
                 new SweetAlertDialog(MainActivity.this,SweetAlertDialog.ERROR_TYPE).setTitleText("Sync Failed").show();
@@ -443,6 +451,7 @@ ProgressDialog dialog=new ProgressDialog(context);
             super.onPostExecute(aBoolean);
         }
     }
+
 
     private class getMaster_Tables extends AsyncTask<Void,Void,String>
     {

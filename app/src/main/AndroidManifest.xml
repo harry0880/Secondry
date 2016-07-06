@@ -25,10 +25,6 @@
             android:name=".Utils.SimpleScannerFragmentActivity"
             android:label="barcode"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".AddRetailer"
-            android:label="@string/title_activity_add_retailer"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".Utils.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

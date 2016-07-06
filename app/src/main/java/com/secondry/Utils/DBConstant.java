@@ -21,6 +21,8 @@ public class DBConstant {
     public static final String C_Id="_id";
     public static final String C_Qty="Qty";
     public static final String C_SaleDate="date";
+    public static final String C_User="C_user";
+    public static final String T_User="T_user";
 
     public static final String T_Imei="Imei";
     public static final String C_Imeino ="Imeino";
@@ -30,6 +32,8 @@ public class DBConstant {
             +C_Model_Id+" TEXT,"
             +C_Qty+" TEXT,"
             +C_SaleDate+" TEXT) ";
+
+    public static final String Create_Table_User="Create Table "+T_User+" ("+C_User+" TEXT)";
 
     public static final String Create_Table_Model="Create Table "+T_Model_Master+" ("+C_Model_Id+ " TEXT,"
             +C_Model_Model_Name+" TEXT)";

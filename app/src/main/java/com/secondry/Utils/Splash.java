@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.secondry.Login;
 import com.secondry.MainActivity;
 import com.secondry.R;
 
@@ -58,7 +59,7 @@ public class Splash extends AppCompatActivity {
                 new SweetAlertDialog(context,SweetAlertDialog.ERROR_TYPE).setTitleText("Unable to connect with Server!!!").show();
             }
             else {
-                startActivity(new Intent(Splash.this,MainActivity.class));
+                startActivity(new Intent(Splash.this,Login.class));
                 finish();
             }
             super.onPostExecute(s);
