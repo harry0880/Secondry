@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.secondry.Utils.DbHandler;
-import com.secondry.Utils.Splash;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -35,7 +34,8 @@ public class Login extends AppCompatActivity {
                 if(!username.getText().toString().trim().equals(""))
                 {
                     db.insert_user(username.getText().toString());
-                    startActivity(new Intent(context, Splash.class));
+                    startActivity(new Intent(context, MainActivity.class));
+                    finish();
                 }
                 else {
                     Snackbar.make(v,"Please enter your username",Snackbar.LENGTH_SHORT).show();
@@ -48,11 +48,9 @@ public class Login extends AppCompatActivity {
 
     void initialize()
     {
-     login=(FancyButton)findViewById(R.id.btnSubmit);
+        login=(FancyButton)findViewById(R.id.btnSubmit);
         username=(EditText) findViewById(R.id.etusername);
-
         db=new DbHandler(Login.this);
-
     }
 
 }
