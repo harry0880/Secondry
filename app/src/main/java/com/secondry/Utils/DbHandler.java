@@ -335,7 +335,9 @@ public class DbHandler extends SQLiteOpenHelper {
     {
         SQLiteDatabase db=getWritableDatabase();
         String qry="delete from "+DBConstant.T_Secondry;
+        String qry2="delete from "+DBConstant.T_Imei;
         db.execSQL(qry);
+        db.execSQL(qry2);
         db.close();
     }
 

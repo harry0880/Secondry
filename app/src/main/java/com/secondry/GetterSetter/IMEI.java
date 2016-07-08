@@ -15,7 +15,7 @@ public class IMEI {
         IMEI.imei = imei;
     }
 
-    static ArrayList<String> imei;
+    static ArrayList<String> imei=null;
 
     public static int getCnt() {
         return cnt;

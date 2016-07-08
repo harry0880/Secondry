@@ -49,8 +49,10 @@ SearchableSpinner spModel,spRetailers;
     ImageButton barcode;
     ArrayAdapter<GetSetData> adapter;
     ArrayList<GetSetData> data;
+    ArrayList<GetSetData> dataShow;
     ListView lv;
     Context context;
+    ViewGroup.LayoutParams lvp;
 
     DbHandler dbh;
     Model model;
@@ -68,8 +70,8 @@ SearchableSpinner spModel,spRetailers;
         setModel();
         setRetailers();
         context=this;
-        adapter=new ArrayAdapter<GetSetData>(this,  android.R.layout.simple_list_item_1, android.R.id.text1, data);
-    lv.setAdapter(adapter);
+        adapter=new ArrayAdapter<GetSetData>(this,  android.R.layout.simple_list_item_1, android.R.id.text1, dataShow);
+        lv.setAdapter(adapter);
         barcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,10 +117,13 @@ SearchableSpinner spModel,spRetailers;
                         for (String ar : arr) {
                             imeino.add(ar);
                         }
-                        data.add(new GetSetData(model.getModelaName(), etQty.getText().toString(), imeino));
+                        data.add(new GetSetData(model.getModelId(), etQty.getText().toString(), imeino));
+                        dataShow.add(new GetSetData(model.getModelaName(), etQty.getText().toString(), imeino));
                         adapter.notifyDataSetChanged();
                         etQty.setText("");
                         etImei.setText("");
+                        lvp.height = lv.getHeight() + 100;
+                        lv.requestLayout();
                     } else {
                         Snackbar.make(v, "Qty and IMEI count don't match", Snackbar.LENGTH_LONG).show();
                     }
@@ -150,6 +155,8 @@ SearchableSpinner spModel,spRetailers;
                             dbh.insertSecondryImei(cv1);
                         }
                     }
+                    lvp.height=0;
+                    lv.requestLayout();
                     btnSave.setEnabled(false);
                     btnSave.setBackgroundColor(Color.parseColor("#FF63727B"));
                     btnSubmit.setEnabled(false);
@@ -175,12 +182,17 @@ SearchableSpinner spModel,spRetailers;
                    fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                etQty.setText("");
+                etImei.setText("");
                 data.clear();
+                dataShow.clear();
                                 adapter.notifyDataSetChanged();
                                 btnSave.setEnabled(true);
                                 btnSave.setBackgroundColor(Color.parseColor("#303F9F"));
                                 btnSubmit.setEnabled(true);
                                 btnSubmit.setBackgroundColor(Color.parseColor("#303F9F"));
+                lvp.height=0;
+                lv.requestLayout();
             }
         });
 
@@ -196,15 +208,18 @@ SearchableSpinner spModel,spRetailers;
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         ArrayList<String> imei=IMEI.getImei();
-        String Imei=null;
-        for(String emi:imei)
-        {
-            if(Imei==null)
-            Imei=emi;
-            else
-                Imei=Imei+"\n"+emi;
+        if(imei!=null) {
+            String Imei = null;
+            for (String emi : imei) {
+                if (Imei == null)
+                    Imei = emi;
+                else
+                    Imei = Imei + "\n" + emi;
+            }
+            etImei.setText(Imei);
+            imei=null;
+            IMEI.setImei(imei);
         }
-        etImei.setText(Imei);
     }
 
     String getDate()
@@ -297,11 +312,13 @@ SearchableSpinner spModel,spRetailers;
         btnSubmit=(FancyButton) findViewById(R.id.btnSubmit);
         barcode=(ImageButton) findViewById(R.id.barcode);
         data=new ArrayList<>();
+        dataShow=new ArrayList<>();
         lv=(ListView) findViewById(R.id.listview);
         etImei=(EditText) findViewById(R.id.etImei);
         btnSave=(FancyButton) findViewById(R.id.btnSave);
         spRetailers=(SearchableSpinner) findViewById(R.id.spRetailer);
         btnAddnewRetailer=(ImageButton) findViewById(R.id.btnAddNew);
+        lvp=(ViewGroup.LayoutParams)lv.getLayoutParams();
     }
 
     @Override
