@@ -343,7 +343,7 @@ SearchableSpinner spModel,spRetailers;
         switch (item.getItemId())
         {
             case R.id.Sync:
-                new SweetAlertDialog(context,SweetAlertDialog.WARNING_TYPE).setTitleText("Are you Sure!!!").setContentText("Sync Data?")
+                new SweetAlertDialog(context,SweetAlertDialog.WARNING_TYPE).setTitleText("Are you Sure!!!").setContentText("Sync Data?").setCancelClickListener(null)
                         .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sweetAlertDialog) {
