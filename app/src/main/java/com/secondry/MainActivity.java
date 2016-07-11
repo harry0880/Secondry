@@ -508,7 +508,8 @@ ProgressDialog dialog=new ProgressDialog(context);
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(context, AndroidDatabaseManager.class));
+        //startActivity(new Intent(context, AndroidDatabaseManager.class));
+        finish();
         super.onBackPressed();
     }
 }
