@@ -131,7 +131,6 @@ SearchableSpinner spModel,spRetailers;
                 } else {
                     {
                        Snackbar.make(v, "Please Enter All fields!!!", Snackbar.LENGTH_LONG).show();
-                        FirebaseCrash.logcat(Log.ERROR, TAG, "all fields not entered");
                     }
                 }
             }

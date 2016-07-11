@@ -112,6 +112,8 @@ public class DbHandler extends SQLiteOpenHelper {
             res = response.toString();
             //System.out.println(res);
         } catch (Exception e) {
+            FirebaseCrash.logcat(Log.ERROR, TAG, "Error");
+            FirebaseCrash.report(e);
             e.printStackTrace();
             return "Error";
         }
@@ -151,6 +153,8 @@ public class DbHandler extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            FirebaseCrash.logcat(Log.ERROR, TAG, "Error_getting server data");
+            FirebaseCrash.report(e);
             return "ErrorServer";
         }
         return "Success";
@@ -191,6 +195,8 @@ public class DbHandler extends SQLiteOpenHelper {
             //System.out.println(res);
         } catch (Exception e) {
             e.printStackTrace();
+            FirebaseCrash.logcat(Log.ERROR, TAG, "Error_AddingRet");
+            FirebaseCrash.report(e);
             return "Error";
         }
         if(SaveRetailer(res))
@@ -327,6 +333,8 @@ public class DbHandler extends SQLiteOpenHelper {
                     //System.out.println(res);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    FirebaseCrash.logcat(Log.ERROR, TAG, "Error_IMEI");
+                    FirebaseCrash.report(e);
                     return "Error";
                 }
             }while (cursor.moveToNext());
@@ -403,6 +411,8 @@ public class DbHandler extends SQLiteOpenHelper {
             return "false";
         } catch (Exception e) {
             e.printStackTrace();
+            FirebaseCrash.logcat(Log.ERROR, TAG, "Error_MatchCount");
+            FirebaseCrash.report(e);
             return "error";
         }
     }
