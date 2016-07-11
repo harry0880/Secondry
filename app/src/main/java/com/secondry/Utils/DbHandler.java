@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.secondry.SpinnerAdapters.Model;
 import com.secondry.SpinnerAdapters.Retailers;
 
@@ -46,6 +47,7 @@ public class DbHandler extends SQLiteOpenHelper {
     String Soapgetcount = "http://tempuri.org/getcount";
 
     JSONObject jsonResponse;
+    private static final String TAG = "DBHandler";
 
     public DbHandler(Context context) {
         super(context, DBConstant.DBName, null, DBConstant.DBVersion);
@@ -222,7 +224,7 @@ public class DbHandler extends SQLiteOpenHelper {
         else user="NA";
         String id;
         if (cursor.getCount() <= 0) {
-            return "Empty";
+           return "Empty";
         } else {
             cursor.moveToFirst();
             do {
@@ -271,8 +273,10 @@ public class DbHandler extends SQLiteOpenHelper {
                     res = response.toString();
                         SyncIMEI(res,id);
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    return "Error";
+                    FirebaseCrash.logcat(Log.ERROR, TAG, "Error");
+                   FirebaseCrash.report(e);
+                    String exp= e.toString();
+                    return exp;
                 }
             } while (cursor.moveToNext());
             db.close();

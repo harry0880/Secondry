@@ -13,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,11 +26,11 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.secondry.GetterSetter.GetSetData;
 import com.secondry.GetterSetter.IMEI;
 import com.secondry.SpinnerAdapters.Model;
 import com.secondry.SpinnerAdapters.Retailers;
-import com.secondry.Utils.AndroidDatabaseManager;
 import com.secondry.Utils.DBConstant;
 import com.secondry.Utils.DbHandler;
 import com.secondry.Utils.SimpleScannerFragmentActivity;
@@ -53,7 +54,7 @@ SearchableSpinner spModel,spRetailers;
     ListView lv;
     Context context;
     ViewGroup.LayoutParams lvp;
-
+    private static final String TAG = "MainActivity";
     DbHandler dbh;
     Model model;
     Retailers retailers;
@@ -130,6 +131,7 @@ SearchableSpinner spModel,spRetailers;
                 } else {
                     {
                        Snackbar.make(v, "Please Enter All fields!!!", Snackbar.LENGTH_LONG).show();
+                        FirebaseCrash.logcat(Log.ERROR, TAG, "all fields not entered");
                     }
                 }
             }
@@ -342,7 +344,7 @@ SearchableSpinner spModel,spRetailers;
         switch (item.getItemId())
         {
             case R.id.Sync:
-                new SweetAlertDialog(context,SweetAlertDialog.WARNING_TYPE).setTitleText("Ae you Sure!!!").setContentText("Sync Data?")
+                new SweetAlertDialog(context,SweetAlertDialog.WARNING_TYPE).setTitleText("Are you Sure!!!").setContentText("Sync Data?")
                         .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sweetAlertDialog) {
@@ -428,7 +430,8 @@ ProgressDialog dialog=new ProgressDialog(context);
                 dbh.clearSecondryTable();
             }
             else {
-                new SweetAlertDialog(MainActivity.this,SweetAlertDialog.ERROR_TYPE).setTitleText("Sync Failed").show();
+                new SweetAlertDialog(MainActivity.this,SweetAlertDialog.ERROR_TYPE).setTitleText("Sync Failed").setContentText(s).show();
+               /* FirebaseCrash.logcat(Log.ERROR, TAG, s);*/
             }
             super.onPostExecute(s);
         }
