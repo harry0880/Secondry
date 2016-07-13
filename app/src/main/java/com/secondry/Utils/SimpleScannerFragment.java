@@ -6,12 +6,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.zxing.Result;
 import com.secondry.GetterSetter.IMEI;
 
 import java.util.ArrayList;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 public class SimpleScannerFragment extends Fragment implements ZXingScannerView.ResultHandler {
@@ -39,19 +41,22 @@ public class SimpleScannerFragment extends Fragment implements ZXingScannerView.
     @Override
     public void handleResult(Result rawResult) {
 
+
 if(cnt>0) {
     imei.add(rawResult.getText());
     IMEI.setCnt(cnt--);
 }
-       if(cnt!=0) {
-           Handler handler = new Handler();
-           handler.postDelayed(new Runnable() {
-               @Override
-               public void run() {
-                   mScannerView.resumeCameraPreview(SimpleScannerFragment.this);
-               }
-           }, 500);
-       }
+        if(cnt!=0) {
+            new SweetAlertDialog(getActivity(), SweetAlertDialog.SUCCESS_TYPE).setTitleText("Scanned " + rawResult.getText()).setContentText(cnt + " Scans left!!!")
+                    .setConfirmText("Ok")
+                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                            sweetAlertDialog.dismissWithAnimation();
+                            mScannerView.resumeCameraPreview(SimpleScannerFragment.this);
+                        }
+                    }).show();
+        }
         else {
            IMEI.setImei(imei);
            getActivity().finish();
