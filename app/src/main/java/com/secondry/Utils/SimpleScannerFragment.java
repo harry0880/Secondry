@@ -21,6 +21,7 @@ public class SimpleScannerFragment extends Fragment implements ZXingScannerView.
    /* Barcode barcode;*/
     ArrayList<String> imei=new ArrayList<>();
     int cnt=IMEI.getCnt();
+    boolean notexistBefore=true;
 
 
     @Override
@@ -42,25 +43,66 @@ public class SimpleScannerFragment extends Fragment implements ZXingScannerView.
     public void handleResult(Result rawResult) {
 
 
-if(cnt>0) {
-    imei.add(rawResult.getText());
-    IMEI.setCnt(cnt--);
-}
-        if(cnt!=0) {
-            new SweetAlertDialog(getActivity(), SweetAlertDialog.SUCCESS_TYPE).setTitleText("Scanned " + rawResult.getText()).setContentText(cnt + " Scans left!!!")
-                    .setConfirmText("Ok")
-                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                        @Override
-                        public void onClick(SweetAlertDialog sweetAlertDialog) {
-                            sweetAlertDialog.dismissWithAnimation();
-                            mScannerView.resumeCameraPreview(SimpleScannerFragment.this);
-                        }
-                    }).show();
-        }
-        else {
-           IMEI.setImei(imei);
-           getActivity().finish();
-       }
+        String imeino=rawResult.getText();
+
+            if(imeino.length()==15) {
+                for(int i=0;i<imei.size();i++)
+                {
+                    if(imeino.equals(imei.get(i)))
+                    {
+                        notexistBefore=false;
+                        break;
+                    }
+                }
+                if(notexistBefore)
+                {
+                    if (cnt > 0) {
+
+                        imei.add(imeino);
+                        IMEI.setCnt(cnt--);
+                    }
+                    if (cnt != 0) {
+                        new SweetAlertDialog(getActivity(), SweetAlertDialog.SUCCESS_TYPE).setTitleText("Scanned " + rawResult.getText()).setContentText(cnt + " Scans left!!!")
+                                .setConfirmText("Ok")
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                        sweetAlertDialog.dismissWithAnimation();
+                                        mScannerView.resumeCameraPreview(SimpleScannerFragment.this);
+                                    }
+                                }).show();
+                    } else {
+                        IMEI.setImei(imei);
+                        getActivity().finish();
+                    }
+                }
+                else
+                {
+                    new SweetAlertDialog(getActivity(), SweetAlertDialog.ERROR_TYPE).setTitleText( rawResult.getText() +" is already Scanned!!!").setContentText("Please scan a different IMEI")
+                            .setConfirmText("Ok")
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    sweetAlertDialog.dismissWithAnimation();
+                                    mScannerView.resumeCameraPreview(SimpleScannerFragment.this);
+                                }
+                            }).show();
+                }
+            }
+            else
+            {
+                new SweetAlertDialog(getActivity(), SweetAlertDialog.ERROR_TYPE).setTitleText(rawResult.getText()).setContentText("IMEI not correct!!!")
+                        .setConfirmText("Ok")
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismissWithAnimation();
+                                mScannerView.resumeCameraPreview(SimpleScannerFragment.this);
+                            }
+                        }).show();
+            }
+
+
     }
 
     @Override
@@ -68,6 +110,4 @@ if(cnt>0) {
         super.onPause();
         mScannerView.stopCamera();
     }
-
-
 }
